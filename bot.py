@@ -4,6 +4,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 
 from config import API_ID, API_HASH, BOT_TOKEN
+from webserver import run_webserver
 
 logging.basicConfig(
     level=logging.INFO,
@@ -26,7 +27,11 @@ class BroadcastBot(Client):
         me = await self.get_me()
         logger.info(f"Bot started: @{me.username}")
 
+        self._web_runner = await run_webserver()
+
     async def stop(self, *args, **kwargs):
+        if hasattr(self, "_web_runner"):
+            await self._web_runner.cleanup()
         await super().stop(*args, **kwargs)
         logger.info("Bot stopped.")
 
