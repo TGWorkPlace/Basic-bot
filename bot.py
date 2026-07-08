@@ -1,7 +1,6 @@
 import logging
 
-from pyrogram import Client, filters
-from pyrogram.types import Message
+from pyrogram import Client
 
 from config import API_ID, API_HASH, BOT_TOKEN
 from webserver import run_webserver
@@ -20,6 +19,9 @@ class BroadcastBot(Client):
             api_id=API_ID,
             api_hash=API_HASH,
             bot_token=BOT_TOKEN,
+            # Auto-discovers and imports every module in plugins/ on start,
+            # which is what actually registers any @Client.on_message handlers.
+            plugins=dict(root="plugins"),
         )
 
     async def start(self, *args, **kwargs):
@@ -37,11 +39,6 @@ class BroadcastBot(Client):
 
 
 app = BroadcastBot()
-
-
-@app.on_message(filters.command("start") & filters.private)
-async def start_handler(client: Client, message: Message):
-    await message.reply("Hi")
 
 
 if __name__ == "__main__":
